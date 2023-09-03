@@ -21,4 +21,4 @@ RUN go build -o /server.go
 EXPOSE 1323
 
 # Run
-CMD [ "/server" ]
+CMD [ "/floo-network" ]
