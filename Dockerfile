@@ -7,13 +7,16 @@ WORKDIR /app
 # https://docs.docker.com/engine/reference/builder/#copy
 COPY *.go ./
 
+# Copy the HTML templates
+COPY *.html ./
+
 # Download Go modules
 COPY go.mod .
 COPY go.sum .
 RUN go mod tidy
 
 # Build
-RUN go build .
+RUN go build -o floo-network .
 
 # This is for documentation purposes only.
 # To actually open the port, runtime parameters
@@ -21,4 +24,4 @@ RUN go build .
 EXPOSE 1323
 
 # Run
-CMD [ "/floo-network" ]
+CMD [ "/app/floo-network" ]
