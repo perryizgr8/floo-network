@@ -5,6 +5,7 @@ import (
 	"io"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/gommon/log"
 )
 
 type Template struct {
@@ -19,6 +20,7 @@ func main() {
 	e := echo.New()
 	t := &Template{templates: template.Must(template.ParseFiles("upload.html"))}
 	e.Renderer = t
+	e.Logger.SetLevel(log.DEBUG)
 	e.GET("/", Upload)
 	e.POST("upload", UploadFile)
 	e.Logger.Fatal(e.Start(":1323"))
