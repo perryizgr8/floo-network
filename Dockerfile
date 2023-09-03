@@ -13,7 +13,7 @@ COPY go.sum .
 RUN go mod tidy
 
 # Build
-RUN go build -o /server.go
+RUN go build .
 
 # This is for documentation purposes only.
 # To actually open the port, runtime parameters
