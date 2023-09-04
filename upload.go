@@ -21,17 +21,17 @@ func UploadFile(c echo.Context) error {
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx)
 	if err != nil {
-		return fmt.Errorf("storage.NewClient: %w", err)
+		return c.String(500, err.Error())
 	}
 	defer client.Close()
 
 	fhdr, err := c.FormFile("file")
 	if err != nil {
-		return err
+		return c.String(500, err.Error())
 	}
 	f, err := fhdr.Open()
 	if err != nil {
-		return err
+		return c.String(500, err.Error())
 	}
 	defer f.Close()
 
@@ -45,12 +45,12 @@ func UploadFile(c echo.Context) error {
 	fmt.Printf("Bucket name: floo-network")
 	wc := o.NewWriter(ctx)
 	if _, err = io.Copy(wc, f); err != nil {
-		return fmt.Errorf("io.Copy: %w", err)
+		return c.String(500, err.Error())
 	}
 	fmt.Println("Copy done")
 	if err := wc.Close(); err != nil {
 		fmt.Printf("Writer.Close: %s", err.Error())
-		return fmt.Errorf("Writer.Close: %w", err)
+		return c.String(500, err.Error())
 	}
 	fmt.Println("Writer closed")
 
@@ -58,7 +58,7 @@ func UploadFile(c echo.Context) error {
 	fmt.Println("Attrs obtained")
 	if err != nil {
 		fmt.Printf("Object(%q).Attrs: %s", object, err.Error())
-		return fmt.Errorf("Object(%q).Attrs: %w", object, err)
+		return c.String(500, err.Error())
 	}
 	fmt.Printf("Media link: %s", attrs.MediaLink)
 
