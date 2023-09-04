@@ -49,6 +49,7 @@ func UploadFile(c echo.Context) error {
 	}
 	fmt.Println("Copy done")
 	if err := wc.Close(); err != nil {
+		fmt.Printf("Writer.Close: %s", err.Error())
 		return fmt.Errorf("Writer.Close: %w", err)
 	}
 	fmt.Println("Writer closed")
