@@ -8,6 +8,7 @@ import (
 	"os"
 	"time"
 
+	"cloud.google.com/go/firestore"
 	"cloud.google.com/go/storage"
 
 	"github.com/google/uuid"
@@ -45,7 +46,7 @@ func UploadFile(c echo.Context) error {
 	defer cancel()
 
 	id := uuid.New().String()
-	object := id + fhdr.Filename
+	object := fmt.Sprintf("%s/%s", id, fhdr.Filename)
 	fmt.Printf("Object name: %s", object)
 	o := client.Bucket("floo-transit").Object(object)
 	fmt.Printf("Bucket name: floo-transit")
@@ -80,5 +81,19 @@ func UploadFile(c echo.Context) error {
 	}
 	fmt.Println(u)
 
-	return c.String(200, u)
+	fireclnt, err := firestore.NewClient(ctx, "floo-network")
+	if err != nil {
+		return c.String(500, err.Error())
+	}
+	defer fireclnt.Close()
+
+	_, _, err = fireclnt.Collection("files").Add(ctx, map[string]interface{}{
+		"uuid":       id,
+		"signed_url": u,
+	})
+	if err != nil {
+		return c.String(500, err.Error())
+	}
+
+	return c.String(200, fmt.Sprintf("https://floo.perryizgr8.com/accio/%s/", id))
 }

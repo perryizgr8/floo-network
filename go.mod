@@ -8,9 +8,16 @@ require (
 )
 
 require (
+	cloud.google.com/go/longrunning v0.5.1 // indirect
+	golang.org/x/sync v0.3.0 // indirect
+	golang.org/x/time v0.3.0 // indirect
+)
+
+require (
 	cloud.google.com/go v0.110.4 // indirect
 	cloud.google.com/go/compute v1.20.1 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
+	cloud.google.com/go/firestore v1.12.0
 	cloud.google.com/go/iam v1.1.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
