@@ -56,7 +56,7 @@ func UploadFile(c echo.Context) error {
 	attrs, err := o.Attrs(ctx)
 	fmt.Println("Attrs obtained")
 	if err != nil {
-		fmt.Printf("Object(%q).Attrs: %w", object, err)
+		fmt.Printf("Object(%q).Attrs: %s", object, err.Error())
 		return fmt.Errorf("Object(%q).Attrs: %w", object, err)
 	}
 	fmt.Printf("Media link: %s", attrs.MediaLink)
