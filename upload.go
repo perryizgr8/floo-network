@@ -40,19 +40,26 @@ func UploadFile(c echo.Context) error {
 
 	id := uuid.New().String()
 	object := id + fhdr.Filename
+	fmt.Printf("Object name: %s", object)
 	o := client.Bucket("floo-network").Object(object)
+	fmt.Printf("Bucket name: floo-network")
 	wc := o.NewWriter(ctx)
 	if _, err = io.Copy(wc, f); err != nil {
 		return fmt.Errorf("io.Copy: %w", err)
 	}
+	fmt.Println("Copy done")
 	if err := wc.Close(); err != nil {
 		return fmt.Errorf("Writer.Close: %w", err)
 	}
+	fmt.Println("Writer closed")
 
 	attrs, err := o.Attrs(ctx)
+	fmt.Println("Attrs obtained")
 	if err != nil {
+		fmt.Printf("Object(%q).Attrs: %w", object, err)
 		return fmt.Errorf("Object(%q).Attrs: %w", object, err)
 	}
+	fmt.Printf("Media link: %s", attrs.MediaLink)
 
 	return c.String(200, attrs.MediaLink)
 }
