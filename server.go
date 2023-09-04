@@ -3,6 +3,7 @@ package main
 import (
 	"html/template"
 	"io"
+	"net/http"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
@@ -23,5 +24,8 @@ func main() {
 	e.Logger.SetLevel(log.DEBUG)
 	e.GET("/", Upload)
 	e.POST("upload", UploadFile)
+	e.GET("health/", func(c echo.Context) error {
+		return c.NoContent(http.StatusOK)
+	})
 	e.Logger.Fatal(e.Start(":1323"))
 }
