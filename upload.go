@@ -95,5 +95,5 @@ func UploadFile(c echo.Context) error {
 		return c.String(500, err.Error())
 	}
 
-	return c.String(200, fmt.Sprintf("https://floo.perryizgr8.com/accio/%s/", id))
+	return c.String(200, fmt.Sprintf("https://floo.perryizgr8.com/accio/%s", id))
 }

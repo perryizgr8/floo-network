@@ -27,7 +27,7 @@ func DownloadFile(c echo.Context) error {
 		if err != nil {
 			return c.String(500, err.Error())
 		}
-		data := fmt.Sprint(doc.Data())
+		data := fmt.Sprint(doc.Data()["signed_url"])
 		return c.String(200, data)
 	}
 	return c.NoContent(404)
