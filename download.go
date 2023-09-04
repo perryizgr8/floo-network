@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"net/http"
 
 	"cloud.google.com/go/firestore"
 	"github.com/labstack/echo/v4"
@@ -14,7 +15,7 @@ func DownloadFile(c echo.Context) error {
 	ctx := context.Background()
 	fireclnt, err := firestore.NewClient(ctx, "floo-network")
 	if err != nil {
-		return c.String(500, err.Error())
+		return c.String(http.StatusInternalServerError, err.Error())
 	}
 	defer fireclnt.Close()
 
@@ -25,10 +26,10 @@ func DownloadFile(c echo.Context) error {
 			break
 		}
 		if err != nil {
-			return c.String(500, err.Error())
+			return c.String(http.StatusInternalServerError, err.Error())
 		}
-		data := fmt.Sprint(doc.Data()["signed_url"])
-		return c.String(200, data)
+		signed_url := fmt.Sprint(doc.Data()["signed_url"])
+		return c.Redirect(http.StatusMovedPermanently, signed_url)
 	}
-	return c.NoContent(404)
+	return c.NoContent(http.StatusNotFound)
 }
