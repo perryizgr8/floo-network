@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"time"
 
 	"cloud.google.com/go/storage"
@@ -18,6 +19,11 @@ func Upload(c echo.Context) error {
 }
 
 func UploadFile(c echo.Context) error {
+	secret := c.FormValue("secret")
+	if secret != os.Getenv("SECRET") {
+		return c.String(http.StatusUnauthorized, "Perhaps your memory fails you.")
+	}
+
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx)
 	if err != nil {
@@ -62,5 +68,17 @@ func UploadFile(c echo.Context) error {
 	}
 	fmt.Printf("Media link: %s", attrs.MediaLink)
 
-	return c.String(200, attrs.MediaLink)
+	opts := &storage.SignedURLOptions{
+		Scheme:  storage.SigningSchemeV4,
+		Method:  "GET",
+		Expires: time.Now().Add(24 * time.Hour),
+	}
+
+	u, err := client.Bucket("floo-transit").SignedURL(object, opts)
+	if err != nil {
+		return c.String(500, err.Error())
+	}
+	fmt.Println(u)
+
+	return c.String(200, u)
 }
