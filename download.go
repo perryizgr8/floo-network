@@ -30,4 +30,5 @@ func DownloadFile(c echo.Context) error {
 		data := fmt.Sprint(doc.Data())
 		return c.String(200, data)
 	}
+	return c.NoContent(404)
 }
