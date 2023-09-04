@@ -41,8 +41,8 @@ func UploadFile(c echo.Context) error {
 	id := uuid.New().String()
 	object := id + fhdr.Filename
 	fmt.Printf("Object name: %s", object)
-	o := client.Bucket("floo-network").Object(object)
-	fmt.Printf("Bucket name: floo-network")
+	o := client.Bucket("floo-transit").Object(object)
+	fmt.Printf("Bucket name: floo-transit")
 	wc := o.NewWriter(ctx)
 	if _, err = io.Copy(wc, f); err != nil {
 		return c.String(500, err.Error())
