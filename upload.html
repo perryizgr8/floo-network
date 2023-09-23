@@ -3,6 +3,8 @@
 <i>Select your file.</i><br /><br /><br />
 <input type="file" id="fileInput"><br /><br />
 <button onclick="uploadFile()">Toss a handful of Floo Powder into the fireplace!</button>
+<br /><br /><br />
+<div id="downloadUrl"></div>
 <script>
     function uploadFile() {
         var fileInput = document.getElementById("fileInput");
@@ -24,7 +26,13 @@
         xhr.send(JSON.stringify(data));
         xhr.onreadystatechange = function () {
             if (xhr.readyState == XMLHttpRequest.DONE) {
-                alert(xhr.responseText);
+                var downloadUrl = xhr.responseText;
+                var message = "Your file has been uploaded! You can download it at: <a href=\"" + downloadUrl + "\">" + downloadUrl + "</a>";
+                elem = document.createElement("p");
+                elem.style.color = "red";
+                elem.innerHTML = message;
+                downloadUrlDiv = document.getElementById("downloadUrl");
+                downloadUrlDiv.appendChild(elem);
             }
         }
     }
