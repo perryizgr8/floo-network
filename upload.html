@@ -16,7 +16,7 @@
         // send file name to server and display the response
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "/renameandgetdownloadurl")
-        xhr.setRequestHeader("Content-Type", "text/plain");
+        xhr.setRequestHeader("Content-Type", "multipart/form-data");
         var formData = new FormData();
         formData.append("filename", filename);
         formData.append("tempfilename", "{{.TempFilename}}");
