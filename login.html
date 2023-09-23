@@ -1,0 +1,9 @@
+{{define "login"}}
+<h1>Welcome to the Floo Network!</h1>
+<i>Speak your secret clearly.</i><br /><br /><br />
+<form action="/upload" method="POST" enctype="multipart/form-data">
+    <label>Secret:</label>
+    <input type="text" name="secret"><br /><br />
+    <button>Get your Floo powder!</button>
+</form>
+{{end}}

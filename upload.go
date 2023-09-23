@@ -16,15 +16,21 @@ import (
 )
 
 func Upload(c echo.Context) error {
-	return c.Render(http.StatusOK, "upload", nil)
-}
-
-func UploadFile(c echo.Context) error {
 	secret := c.FormValue("secret")
 	if secret != os.Getenv("SECRET") {
 		return c.String(http.StatusUnauthorized, "Perhaps your memory fails you.")
 	}
 
+	// ctx := context.Background()
+	// client, err := storage.NewClient(ctx)
+	// if err != nil {
+	// 	return c.String(http.StatusInternalServerError, err.Error())
+	// }
+
+	return c.Render(http.StatusOK, "upload", nil)
+}
+
+func UploadFile(c echo.Context) error {
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx)
 	if err != nil {

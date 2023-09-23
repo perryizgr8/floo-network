@@ -1,9 +1,7 @@
 {{define "upload"}}
 <h1>Welcome to the Floo Network!</h1>
-<i>Speak your secret clearly.</i><br /><br /><br />
+<i>Select your file.</i><br /><br /><br />
 <form action="/upload" method="POST" enctype="multipart/form-data">
-    <label>Secret:</label>
-    <input type="text" name="secret"><br /><br />
     <label>File:</label>
     <input type="file" , name="file"><br /><br />
     <button>Toss a handful of Floo Powder into the fireplace!</button>

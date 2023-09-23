@@ -19,11 +19,11 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 
 func main() {
 	e := echo.New()
-	t := &Template{templates: template.Must(template.ParseFiles("upload.html"))}
+	t := &Template{templates: template.Must(template.ParseFiles("login.html", "upload.html"))}
 	e.Renderer = t
 	e.Logger.SetLevel(log.DEBUG)
-	e.GET("/", Upload)
-	e.POST("upload", UploadFile)
+	e.GET("/", Login)
+	e.POST("upload", Upload)
 	e.GET("accio/:uuid", DownloadFile)
 	e.GET("health/", func(c echo.Context) error {
 		return c.NoContent(http.StatusOK)
