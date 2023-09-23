@@ -19,6 +19,11 @@ type UploadData struct {
 	TempFilename string
 }
 
+type RenameData struct {
+	Filename     string `json:"filename"`
+	TempFilename string `json:"tempfilename"`
+}
+
 func Upload(c echo.Context) error {
 	secret := c.FormValue("secret")
 	if secret != os.Getenv("SECRET") {
@@ -50,8 +55,12 @@ func Upload(c echo.Context) error {
 }
 
 func RenameAndGetDownloadUrl(c echo.Context) error {
-	filename := c.FormValue("filename")
-	tempFilename := c.FormValue("tempfilename")
+	renameData := new(RenameData)
+	if err := c.Bind(renameData); err != nil {
+		return c.String(http.StatusBadRequest, err.Error())
+	}
+	filename := renameData.Filename
+	tempFilename := renameData.TempFilename
 
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx)
