@@ -1,9 +1,16 @@
 {{define "upload"}}
 <h1>Welcome to the Floo Network!</h1>
 <i>Select your file.</i><br /><br /><br />
-<form action="{{.Url}}" method="POST" enctype="multipart/form-data">
-    <label>File:</label>
-    <input type="file" , name="file"><br /><br />
-    <button>Toss a handful of Floo Powder into the fireplace!</button>
-</form>
+<input type="file" id="fileInput"><br /><br />
+<button onclick="uploadFile()">Toss a handful of Floo Powder into the fireplace!</button>
+<script>
+    function uploadFile() {
+        var fileInput = document.getElementById("fileInput");
+        var file = fileInput.files[0];
+        var xhr = new XMLHttpRequest();
+        xhr.open("PUT", "{{.Url}}");
+        xhr.setRequestHeader("Content-Type", file.type);
+        xhr.send(file);
+    }
+</script>
 {{end}}
