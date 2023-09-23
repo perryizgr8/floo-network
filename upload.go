@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"io"
 	"net/http"
 	"os"
 	"time"
@@ -16,7 +15,8 @@ import (
 )
 
 type UploadData struct {
-	Url string
+	Url          string
+	TempFilename string
 }
 
 func Upload(c echo.Context) error {
@@ -46,10 +46,13 @@ func Upload(c echo.Context) error {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
 
-	return c.Render(http.StatusOK, "upload", UploadData{Url: u})
+	return c.Render(http.StatusOK, "upload", UploadData{Url: u, TempFilename: object})
 }
 
-func UploadFile(c echo.Context) error {
+func RenameAndGetDownloadUrl(c echo.Context) error {
+	filename := c.FormValue("filename")
+	tempFilename := c.FormValue("tempFilename")
+
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx)
 	if err != nil {
@@ -57,54 +60,27 @@ func UploadFile(c echo.Context) error {
 	}
 	defer client.Close()
 
-	fhdr, err := c.FormFile("file")
-	if err != nil {
-		return c.String(http.StatusInternalServerError, err.Error())
-	}
-	f, err := fhdr.Open()
-	if err != nil {
-		return c.String(http.StatusInternalServerError, err.Error())
-	}
-	defer f.Close()
-
-	ctx, cancel := context.WithTimeout(ctx, time.Second*50)
-	defer cancel()
-
+	// Rename the file from temp to the actual filename
 	id := uuid.New().String()
-	object := fmt.Sprintf("%s/%s", id, fhdr.Filename)
-	fmt.Printf("Object name: %s", object)
-	o := client.Bucket("floo-transit").Object(object)
-	fmt.Printf("Bucket name: floo-transit")
-	wc := o.NewWriter(ctx)
-	if _, err = io.Copy(wc, f); err != nil {
-		return c.String(http.StatusInternalServerError, err.Error())
-	}
-	fmt.Println("Copy done")
-	if err := wc.Close(); err != nil {
-		fmt.Printf("Writer.Close: %s", err.Error())
-		return c.String(http.StatusInternalServerError, err.Error())
-	}
-	fmt.Println("Writer closed")
-
-	attrs, err := o.Attrs(ctx)
-	fmt.Println("Attrs obtained")
+	object := fmt.Sprintf("%s/%s", id, filename)
+	_, err = client.Bucket("floo-transit").Object(object).CopierFrom(client.Bucket("floo-transit").Object(tempFilename)).Run(ctx)
 	if err != nil {
-		fmt.Printf("Object(%q).Attrs: %s", object, err.Error())
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
-	fmt.Printf("Media link: %s", attrs.MediaLink)
+	if err := client.Bucket("floo-transit").Object(tempFilename).Delete(ctx); err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
 
 	opts := &storage.SignedURLOptions{
 		Scheme:  storage.SigningSchemeV4,
 		Method:  "GET",
-		Expires: time.Now().Add(24 * time.Hour),
+		Expires: time.Now().Add(48 * time.Hour),
 	}
 
 	u, err := client.Bucket("floo-transit").SignedURL(object, opts)
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
-	fmt.Println(u)
 
 	fireclnt, err := firestore.NewClient(ctx, "floo-network")
 	if err != nil {

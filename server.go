@@ -24,6 +24,7 @@ func main() {
 	e.Logger.SetLevel(log.DEBUG)
 	e.GET("/", Login)
 	e.POST("upload", Upload)
+	e.POST("renameandgetdownloadurl", RenameAndGetDownloadUrl)
 	e.GET("accio/:uuid", DownloadFile)
 	e.GET("health/", func(c echo.Context) error {
 		return c.NoContent(http.StatusOK)

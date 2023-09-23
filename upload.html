@@ -7,10 +7,25 @@
     function uploadFile() {
         var fileInput = document.getElementById("fileInput");
         var file = fileInput.files[0];
+        filename = file.name;
         var xhr = new XMLHttpRequest();
         xhr.open("PUT", "{{.Url}}");
         xhr.setRequestHeader("Content-Type", "application/octet-stream");
         xhr.send(file);
+
+        // send file name to server and display the response
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/renameandgetdownloadurl")
+        xhr.setRequestHeader("Content-Type", "text/plain");
+        var formData = new FormData();
+        formData.append("filename", filename);
+        formData.append("tempfilename", "{{.TempFilename}}");
+        xhr.send(formData);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                alert(xhr.responseText);
+            }
+        }
     }
 </script>
 {{end}}
