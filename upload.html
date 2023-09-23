@@ -9,7 +9,7 @@
         var file = fileInput.files[0];
         var xhr = new XMLHttpRequest();
         xhr.open("PUT", "{{.Url}}");
-        xhr.setRequestHeader("Content-Type", file.type);
+        xhr.setRequestHeader("Content-Type", "application/octet-stream");
         xhr.send(file);
     }
 </script>
