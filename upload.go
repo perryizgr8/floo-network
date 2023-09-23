@@ -69,6 +69,20 @@ func RenameAndGetDownloadUrl(c echo.Context) error {
 	}
 	defer client.Close()
 
+	// Wait until the object becomes available
+	for {
+		o := client.Bucket("floo-transit").Object(tempFilename)
+		_, err := o.Attrs(ctx)
+		if err != nil {
+			if err == storage.ErrObjectNotExist {
+				time.Sleep(1 * time.Second)
+				continue
+			}
+			return c.String(http.StatusInternalServerError, err.Error())
+		}
+		break
+	}
+
 	// Rename the file from temp to the actual filename
 	id := uuid.New().String()
 	object := fmt.Sprintf("%s/%s", id, filename)
