@@ -15,19 +15,38 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+type UploadData struct {
+	Url string
+}
+
 func Upload(c echo.Context) error {
 	secret := c.FormValue("secret")
 	if secret != os.Getenv("SECRET") {
 		return c.String(http.StatusUnauthorized, "Perhaps your memory fails you.")
 	}
 
-	// ctx := context.Background()
-	// client, err := storage.NewClient(ctx)
-	// if err != nil {
-	// 	return c.String(http.StatusInternalServerError, err.Error())
-	// }
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+	defer client.Close()
 
-	return c.Render(http.StatusOK, "upload", nil)
+	opts := &storage.SignedURLOptions{
+		Scheme:  storage.SigningSchemeV4,
+		Method:  "PUT",
+		Headers: []string{"Content-Type:application/octet-stream"},
+		Expires: time.Now().Add(15 * time.Minute),
+	}
+
+	id := uuid.New().String()
+	object := fmt.Sprintf("%s/%s", id, "temp")
+	u, err := client.Bucket("floo-transit").SignedURL(object, opts)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.Render(http.StatusOK, "upload", UploadData{Url: u})
 }
 
 func UploadFile(c echo.Context) error {
