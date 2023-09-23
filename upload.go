@@ -51,7 +51,7 @@ func Upload(c echo.Context) error {
 
 func RenameAndGetDownloadUrl(c echo.Context) error {
 	filename := c.FormValue("filename")
-	tempFilename := c.FormValue("tempFilename")
+	tempFilename := c.FormValue("tempfilename")
 
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx)
